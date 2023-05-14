@@ -1,12 +1,19 @@
 TARGET = bin/winfetch.exe
-SRCS = $(wildcard src/*.cpp)
+GUITARGET = bin/winfetch-gui.exe
+SRC = src/main.cpp
+GUISRC = src/gui.cpp
 LDLIBS = -ld3d9 -liphlpapi -ldxgi
+CC = g++
 
 all: $(TARGET)
-	$(TARGET)
 
-$(TARGET): $(SRCS)
-	g++ $(SRCS) $(LDLIBS) -o $(TARGET)
+gui: $(GUITARGET)
+
+$(TARGET): $(SRC)
+	$(CC) $(SRC) -o $(TARGET) $(LDLIBS)
+
+$(GUITARGET): $(GUISRC)
+	$(CC) $(GUISRC) -o $(GUITARGET) $(LDLIBS)
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(GUITARGET)
