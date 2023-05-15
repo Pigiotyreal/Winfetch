@@ -5,7 +5,7 @@ GUISRC = src/gui.cpp
 LDLIBS = -ld3d9 -liphlpapi -ldxgi
 INCPATH = src/inc
 LIBPATH = src/lib
-GUIARGS = -lSDL2main -lSDL2
+GUIARGS = -lSDL2main -lSDL2 -lSDL2_ttf
 CC = g++
 
 all: $(TARGET)
