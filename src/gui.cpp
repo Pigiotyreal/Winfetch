@@ -3,6 +3,43 @@
 #include "inc/SDL2/SDL.h"
 #include "inc/SDL2/SDL_ttf.h"
 #include <iostream>
+#include <winsock2.h>
+#include <windows.h>
+#include <intrin.h>
+#include <iomanip>
+#include <vector>
+#include <chrono>
+#include <d3d9.h>
+#include <tlhelp32.h>
+#include <iphlpapi.h>
+#include <dxgi.h>
+#include <string>
+
+SYSTEM_INFO sysinfo;
+
+std::string cpuArch() {
+    GetSystemInfo(&sysinfo);
+    int CPUInfo[4] = {-1};
+    HKEY hKey;
+    DWORD dwType, dwSize;
+
+    switch(sysinfo.wProcessorArchitecture) {
+        case PROCESSOR_ARCHITECTURE_AMD64:
+            std::cout << "x64\n";
+            return "x64";
+            break;
+        case PROCESSOR_ARCHITECTURE_INTEL:
+            std::cout << "x86\n";
+            return "x86";
+            break;
+        case PROCESSOR_ARCHITECTURE_ARM:
+            return "ARM";
+            break;
+        default:
+            return "Unknown";
+            break;
+    }
+}
 
 int main(int argc, char *argv[]) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -37,23 +74,18 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_Color color = {255, 255, 255, 255};
-    SDL_Surface *surface = TTF_RenderText_Solid(font, "Hello World", color);
 
-    if (surface == nullptr) {
-        std::cout << "TTF_RenderText_Solid Error: " << TTF_GetError() << std::endl;
-        return 1;
-    }
+    SDL_Surface *cpuarchText = TTF_RenderText_Solid(font, "CPU Architecture: ", color);
+    SDL_Surface *cpuarch = TTF_RenderText_Solid(font, cpuArch().c_str(), color);
 
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, surface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, cpuarch);
+    SDL_Texture *texture2 = SDL_CreateTextureFromSurface(ren, cpuarchText);
 
-    if (texture == nullptr) {
-        std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-        return 1;
-    }
-
-    SDL_Rect dest = {5, 5, surface->w, surface->h};
+    SDL_Rect dest = {200, 5, cpuarch->w, cpuarch->h};
+    SDL_Rect dest2 = {5, 5, cpuarchText->w, cpuarchText->h};
 
     SDL_RenderCopy(ren, texture, NULL, &dest);
+    SDL_RenderCopy(ren, texture2, NULL, &dest2);
     SDL_RenderPresent(ren);
 
     bool quit = false;
@@ -67,8 +99,10 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    SDL_FreeSurface(surface);
+    SDL_FreeSurface(cpuarch);
+    SDL_FreeSurface(cpuarchText);
     SDL_DestroyTexture(texture);
+    SDL_DestroyTexture(texture2);
     SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(win);
     TTF_CloseFont(font);

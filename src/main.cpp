@@ -70,7 +70,7 @@ void cpuInfo() {
     }
 
     std::cout << "  Cores: " << physicalCores << "\n";
-    std::cout << "  Threads: " << sysinfo.dwNumberOfProcessors << "\n"; 
+    std::cout << "  Threads: " << sysinfo.dwNumberOfProcessors << "\n";
 }
 
 void osInfo() {
