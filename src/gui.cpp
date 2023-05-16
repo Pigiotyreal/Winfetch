@@ -61,7 +61,6 @@ std::string cpuSpeed() {
         DWORD* dwMHzbuff = new DWORD;
         if (RegQueryValueEx(hKey, "~MHz", NULL, &dwType, (LPBYTE)dwMHzbuff, &dwSize) == ERROR_SUCCESS) {
             DWORD dwMHz = *dwMHzbuff;
-            //Return the cpu speed in GHz with it rounded to 2 decimal places, with "GHz" appended to the end
             return std::to_string((float)dwMHz / 1000).substr(0, 4) + "GHz";
         }
     }
