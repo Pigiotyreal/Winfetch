@@ -19,9 +19,6 @@ SYSTEM_INFO sysinfo;
 
 std::string cpuArch() {
     GetSystemInfo(&sysinfo);
-    int CPUInfo[4] = {-1};
-    HKEY hKey;
-    DWORD dwType, dwSize;
 
     switch(sysinfo.wProcessorArchitecture) {
         case PROCESSOR_ARCHITECTURE_AMD64:
@@ -39,6 +36,21 @@ std::string cpuArch() {
             return "Unknown";
             break;
     }
+}
+
+std::string cpuName() {
+    int CPUInfo[4] = {-1};
+
+    char cpuName[49];
+    __cpuid(CPUInfo, 0x80000002);
+    memcpy(cpuName, CPUInfo, sizeof(CPUInfo));
+    __cpuid(CPUInfo, 0x80000003);
+    memcpy(cpuName + 16, CPUInfo, sizeof(CPUInfo));
+    __cpuid(CPUInfo, 0x80000004);
+    memcpy(cpuName + 32, CPUInfo, sizeof(CPUInfo));
+    cpuName[48] = '\0';
+
+    return cpuName;
 }
 
 int main(int argc, char *argv[]) {
@@ -77,15 +89,23 @@ int main(int argc, char *argv[]) {
 
     SDL_Surface *cpuarchText = TTF_RenderText_Solid(font, "CPU Architecture: ", color);
     SDL_Surface *cpuarch = TTF_RenderText_Solid(font, cpuArch().c_str(), color);
+    SDL_Surface *cpunameText = TTF_RenderText_Solid(font, "CPU Name: ", color);
+    SDL_Surface *cpuname = TTF_RenderText_Solid(font, cpuName().c_str(), color);
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, cpuarch);
     SDL_Texture *texture2 = SDL_CreateTextureFromSurface(ren, cpuarchText);
+    SDL_Texture *texture3 = SDL_CreateTextureFromSurface(ren, cpuname);
+    SDL_Texture *texture4 = SDL_CreateTextureFromSurface(ren, cpunameText);
 
     SDL_Rect dest = {200, 5, cpuarch->w, cpuarch->h};
     SDL_Rect dest2 = {5, 5, cpuarchText->w, cpuarchText->h};
+    SDL_Rect dest3 = {140, 50, cpuname->w, cpuname->h};
+    SDL_Rect dest4 = {5, 50, cpunameText->w, cpunameText->h};
 
     SDL_RenderCopy(ren, texture, NULL, &dest);
     SDL_RenderCopy(ren, texture2, NULL, &dest2);
+    SDL_RenderCopy(ren, texture3, NULL, &dest3);
+    SDL_RenderCopy(ren, texture4, NULL, &dest4);
     SDL_RenderPresent(ren);
 
     bool quit = false;
@@ -101,8 +121,12 @@ int main(int argc, char *argv[]) {
 
     SDL_FreeSurface(cpuarch);
     SDL_FreeSurface(cpuarchText);
+    SDL_FreeSurface(cpuname);
+    SDL_FreeSurface(cpunameText);
     SDL_DestroyTexture(texture);
     SDL_DestroyTexture(texture2);
+    SDL_DestroyTexture(texture3);
+    SDL_DestroyTexture(texture4);
     SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(win);
     TTF_CloseFont(font);
