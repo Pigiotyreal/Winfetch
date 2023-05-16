@@ -68,6 +68,22 @@ std::string cpuSpeed() {
     return "Unknown";
 }
 
+std::string cpuCores() {
+    DWORD bufferSize = 0;
+    GetLogicalProcessorInformation(NULL, &bufferSize);
+    PSYSTEM_LOGICAL_PROCESSOR_INFORMATION buffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)malloc(bufferSize);
+    GetLogicalProcessorInformation(buffer, &bufferSize);
+
+    int physicalCores = 0;
+    for (DWORD i = 0; i < bufferSize / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION); i++) {
+        if (buffer[i].Relationship == RelationProcessorCore) {
+            physicalCores++;
+        }
+    }
+
+    return std::to_string(physicalCores);
+}
+
 int main(int argc, char *argv[]) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
@@ -108,6 +124,8 @@ int main(int argc, char *argv[]) {
     SDL_Surface *cpuname = TTF_RenderText_Solid(font, cpuName().c_str(), color);
     SDL_Surface *cpuspeedText = TTF_RenderText_Solid(font, "CPU Speed: ", color);
     SDL_Surface *cpuspeed = TTF_RenderText_Solid(font, cpuSpeed().c_str(), color);
+    SDL_Surface *cpucoresText = TTF_RenderText_Solid(font, "CPU Cores: ", color);
+    SDL_Surface *cpucores = TTF_RenderText_Solid(font, cpuCores().c_str(), color);
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, cpuarch);
     SDL_Texture *texture2 = SDL_CreateTextureFromSurface(ren, cpuarchText);
@@ -115,6 +133,8 @@ int main(int argc, char *argv[]) {
     SDL_Texture *texture4 = SDL_CreateTextureFromSurface(ren, cpunameText);
     SDL_Texture *texture5 = SDL_CreateTextureFromSurface(ren, cpuspeed);
     SDL_Texture *texture6 = SDL_CreateTextureFromSurface(ren, cpuspeedText);
+    SDL_Texture *texture7 = SDL_CreateTextureFromSurface(ren, cpucores);
+    SDL_Texture *texture8 = SDL_CreateTextureFromSurface(ren, cpucoresText);
 
     SDL_Rect dest = {200, 5, cpuarch->w, cpuarch->h};
     SDL_Rect dest2 = {5, 5, cpuarchText->w, cpuarchText->h};
@@ -122,7 +142,8 @@ int main(int argc, char *argv[]) {
     SDL_Rect dest4 = {5, 50, cpunameText->w, cpunameText->h};
     SDL_Rect dest5 = {145, 100, cpuspeed->w, cpuspeed->h};
     SDL_Rect dest6 = {5, 100, cpuspeedText->w, cpuspeedText->h};
-
+    SDL_Rect dest7 = {140, 150, cpucores->w, cpucores->h};
+    SDL_Rect dest8 = {5, 150, cpucoresText->w, cpucoresText->h};
 
     SDL_RenderCopy(ren, texture, NULL, &dest);
     SDL_RenderCopy(ren, texture2, NULL, &dest2);
@@ -130,6 +151,8 @@ int main(int argc, char *argv[]) {
     SDL_RenderCopy(ren, texture4, NULL, &dest4);
     SDL_RenderCopy(ren, texture5, NULL, &dest5);
     SDL_RenderCopy(ren, texture6, NULL, &dest6);
+    SDL_RenderCopy(ren, texture7, NULL, &dest7);
+    SDL_RenderCopy(ren, texture8, NULL, &dest8);
     SDL_RenderPresent(ren);
 
     bool quit = false;
@@ -149,12 +172,16 @@ int main(int argc, char *argv[]) {
     SDL_FreeSurface(cpunameText);
     SDL_FreeSurface(cpuspeed);
     SDL_FreeSurface(cpuspeedText);
+    SDL_FreeSurface(cpucores);
+    SDL_FreeSurface(cpucoresText);
     SDL_DestroyTexture(texture);
     SDL_DestroyTexture(texture2);
     SDL_DestroyTexture(texture3);
     SDL_DestroyTexture(texture4);
     SDL_DestroyTexture(texture5);
     SDL_DestroyTexture(texture6);
+    SDL_DestroyTexture(texture7);
+    SDL_DestroyTexture(texture8);
     SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(win);
     TTF_CloseFont(font);
