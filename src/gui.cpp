@@ -88,6 +88,14 @@ std::string cpuThreads() {
     return std::to_string(sysinfo.dwNumberOfProcessors);
 }
 
+std::string ramTotal() {
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof(statex);
+    GlobalMemoryStatusEx(&statex);
+
+    return std::to_string(statex.ullTotalPhys / 1024 / 1024) + "MB";
+}
+
 int main(int argc, char *argv[]) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
@@ -132,6 +140,8 @@ int main(int argc, char *argv[]) {
     SDL_Surface *cpucores = TTF_RenderText_Solid(font, cpuCores().c_str(), color);
     SDL_Surface *cputhreadText = TTF_RenderText_Solid(font, "CPU Threads: ", color);
     SDL_Surface *cputhread = TTF_RenderText_Solid(font, cpuThreads().c_str(), color);
+    SDL_Surface *ramtotalText = TTF_RenderText_Solid(font, "Total RAM: ", color);
+    SDL_Surface *ramtotal = TTF_RenderText_Solid(font, ramTotal().c_str(), color);
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, cpuarch);
     SDL_Texture *texture2 = SDL_CreateTextureFromSurface(ren, cpuarchText);
@@ -143,6 +153,8 @@ int main(int argc, char *argv[]) {
     SDL_Texture *texture8 = SDL_CreateTextureFromSurface(ren, cpucoresText);
     SDL_Texture *texture9 = SDL_CreateTextureFromSurface(ren, cputhread);
     SDL_Texture *texture10 = SDL_CreateTextureFromSurface(ren, cputhreadText);
+    SDL_Texture *texture11 = SDL_CreateTextureFromSurface(ren, ramtotal);
+    SDL_Texture *texture12 = SDL_CreateTextureFromSurface(ren, ramtotalText);
 
     SDL_Rect dest = {cpuarchText->w + 5, 5, cpuarch->w, cpuarch->h};
     SDL_Rect dest2 = {5, 5, cpuarchText->w, cpuarchText->h};
@@ -154,6 +166,8 @@ int main(int argc, char *argv[]) {
     SDL_Rect dest8 = {5, 150, cpucoresText->w, cpucoresText->h};
     SDL_Rect dest9 = {cputhreadText-> w + 5, 200, cputhread->w, cputhread->h};
     SDL_Rect dest10 = {5, 200, cputhreadText->w, cputhreadText->h};
+    SDL_Rect dest11 = {ramtotalText->w + 5, 250, ramtotal->w, ramtotal->h};
+    SDL_Rect dest12 = {5, 250, ramtotalText->w, ramtotalText->h};
 
     SDL_RenderCopy(ren, texture, NULL, &dest);
     SDL_RenderCopy(ren, texture2, NULL, &dest2);
@@ -165,6 +179,8 @@ int main(int argc, char *argv[]) {
     SDL_RenderCopy(ren, texture8, NULL, &dest8);
     SDL_RenderCopy(ren, texture9, NULL, &dest9);
     SDL_RenderCopy(ren, texture10, NULL, &dest10);
+    SDL_RenderCopy(ren, texture11, NULL, &dest11);
+    SDL_RenderCopy(ren, texture12, NULL, &dest12);
     SDL_RenderPresent(ren);
 
     bool quit = false;
@@ -188,6 +204,8 @@ int main(int argc, char *argv[]) {
     SDL_FreeSurface(cpucoresText);
     SDL_FreeSurface(cputhread);
     SDL_FreeSurface(cputhreadText);
+    SDL_FreeSurface(ramtotal);
+    SDL_FreeSurface(ramtotalText);
     SDL_DestroyTexture(texture);
     SDL_DestroyTexture(texture2);
     SDL_DestroyTexture(texture3);
@@ -198,6 +216,8 @@ int main(int argc, char *argv[]) {
     SDL_DestroyTexture(texture8);
     SDL_DestroyTexture(texture9);
     SDL_DestroyTexture(texture10);
+    SDL_DestroyTexture(texture11);
+    SDL_DestroyTexture(texture12);
     SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(win);
     TTF_CloseFont(font);
