@@ -144,15 +144,15 @@ int main(int argc, char *argv[]) {
     SDL_Texture *texture9 = SDL_CreateTextureFromSurface(ren, cputhread);
     SDL_Texture *texture10 = SDL_CreateTextureFromSurface(ren, cputhreadText);
 
-    SDL_Rect dest = {200, 5, cpuarch->w, cpuarch->h};
+    SDL_Rect dest = {cpuarchText->w + 5, 5, cpuarch->w, cpuarch->h};
     SDL_Rect dest2 = {5, 5, cpuarchText->w, cpuarchText->h};
-    SDL_Rect dest3 = {140, 50, cpuname->w, cpuname->h};
+    SDL_Rect dest3 = {cpunameText->w + 5, 50, cpuname->w, cpuname->h};
     SDL_Rect dest4 = {5, 50, cpunameText->w, cpunameText->h};
-    SDL_Rect dest5 = {145, 100, cpuspeed->w, cpuspeed->h};
+    SDL_Rect dest5 = {cpuspeedText->w + 5, 100, cpuspeed->w, cpuspeed->h};
     SDL_Rect dest6 = {5, 100, cpuspeedText->w, cpuspeedText->h};
-    SDL_Rect dest7 = {140, 150, cpucores->w, cpucores->h};
+    SDL_Rect dest7 = {cpucoresText->w + 5, 150, cpucores->w, cpucores->h};
     SDL_Rect dest8 = {5, 150, cpucoresText->w, cpucoresText->h};
-    SDL_Rect dest9 = {160, 200, cputhread->w, cputhread->h};
+    SDL_Rect dest9 = {cputhreadText-> w + 5, 200, cputhread->w, cputhread->h};
     SDL_Rect dest10 = {5, 200, cputhreadText->w, cputhreadText->h};
 
     SDL_RenderCopy(ren, texture, NULL, &dest);
