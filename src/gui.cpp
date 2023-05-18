@@ -96,6 +96,15 @@ std::string ramTotal() {
     return std::to_string(statex.ullTotalPhys / 1024 / 1024) + "MB";
 }
 
+std::string ramUsage() {
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof(statex);
+    GlobalMemoryStatusEx(&statex);
+    DWORDLONG usedram = statex.ullTotalPhys - statex.ullAvailPhys;
+
+    return std::to_string(usedram / 1024 / 1024) + "MB (" + std::to_string((float)usedram / statex.ullTotalPhys * 100).substr(0, 4) + "%)";
+}
+
 int main(int argc, char *argv[]) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
@@ -142,6 +151,8 @@ int main(int argc, char *argv[]) {
     SDL_Surface *cputhread = TTF_RenderText_Solid(font, cpuThreads().c_str(), color);
     SDL_Surface *ramtotalText = TTF_RenderText_Solid(font, "Total RAM: ", color);
     SDL_Surface *ramtotal = TTF_RenderText_Solid(font, ramTotal().c_str(), color);
+    SDL_Surface *ramusageText = TTF_RenderText_Solid(font, "RAM Usage: ", color);
+    SDL_Surface *ramusage = TTF_RenderText_Solid(font, ramUsage().c_str(), color);
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(ren, cpuarch);
     SDL_Texture *texture2 = SDL_CreateTextureFromSurface(ren, cpuarchText);
@@ -155,6 +166,8 @@ int main(int argc, char *argv[]) {
     SDL_Texture *texture10 = SDL_CreateTextureFromSurface(ren, cputhreadText);
     SDL_Texture *texture11 = SDL_CreateTextureFromSurface(ren, ramtotal);
     SDL_Texture *texture12 = SDL_CreateTextureFromSurface(ren, ramtotalText);
+    SDL_Texture *texture13 = SDL_CreateTextureFromSurface(ren, ramusage);
+    SDL_Texture *texture14 = SDL_CreateTextureFromSurface(ren, ramusageText);
 
     SDL_Rect dest = {cpuarchText->w + 5, 5, cpuarch->w, cpuarch->h};
     SDL_Rect dest2 = {5, 5, cpuarchText->w, cpuarchText->h};
@@ -168,6 +181,8 @@ int main(int argc, char *argv[]) {
     SDL_Rect dest10 = {5, 200, cputhreadText->w, cputhreadText->h};
     SDL_Rect dest11 = {ramtotalText->w + 5, 250, ramtotal->w, ramtotal->h};
     SDL_Rect dest12 = {5, 250, ramtotalText->w, ramtotalText->h};
+    SDL_Rect dest13 = {ramusageText->w + 5, 300, ramusage->w, ramusage->h};
+    SDL_Rect dest14 = {5, 300, ramusageText->w, ramusageText->h};
 
     SDL_RenderCopy(ren, texture, NULL, &dest);
     SDL_RenderCopy(ren, texture2, NULL, &dest2);
@@ -181,6 +196,8 @@ int main(int argc, char *argv[]) {
     SDL_RenderCopy(ren, texture10, NULL, &dest10);
     SDL_RenderCopy(ren, texture11, NULL, &dest11);
     SDL_RenderCopy(ren, texture12, NULL, &dest12);
+    SDL_RenderCopy(ren, texture13, NULL, &dest13);
+    SDL_RenderCopy(ren, texture14, NULL, &dest14);
     SDL_RenderPresent(ren);
 
     bool quit = false;
@@ -206,6 +223,8 @@ int main(int argc, char *argv[]) {
     SDL_FreeSurface(cputhreadText);
     SDL_FreeSurface(ramtotal);
     SDL_FreeSurface(ramtotalText);
+    SDL_FreeSurface(ramusage);
+    SDL_FreeSurface(ramusageText);
     SDL_DestroyTexture(texture);
     SDL_DestroyTexture(texture2);
     SDL_DestroyTexture(texture3);
@@ -218,6 +237,8 @@ int main(int argc, char *argv[]) {
     SDL_DestroyTexture(texture10);
     SDL_DestroyTexture(texture11);
     SDL_DestroyTexture(texture12);
+    SDL_DestroyTexture(texture13);
+    SDL_DestroyTexture(texture14);
     SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(win);
     TTF_CloseFont(font);
